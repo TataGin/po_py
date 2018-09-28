@@ -3,10 +3,10 @@ import glob
 import pandas as pd
 
 
-def stack_csv(input_path, output_file='Concat.csv',
-              index_col=[0], output_path=None, join='outer',
-              sort=False, subfolders=False, fill_na=False,
-              ffill=None):
+def concat_csv(input_path, output_file='Concat.csv',
+               index_col=[0], output_path=None, join='outer',
+               sort=False, subfolders=False, fill_na=False,
+               ffill=None):
     ''' Concatenates all csv files in a folder and optionnally its subfolders
 
         Positional arguments:
