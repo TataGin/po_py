@@ -9,4 +9,3 @@ setup(name='po_py',
       license='MIT',
       packages=['funniest', ],
       zip_safe=False)
-# dsdsddsds
