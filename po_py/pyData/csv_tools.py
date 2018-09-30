@@ -3,10 +3,12 @@ import glob
 import pandas as pd
 
 
-def concat_csv(input_path, output_file='Concat.csv',
-               index_col=[0], output_path=None, join='outer',
-               sort=False, subfolders=False, fill_na=False,
-               ffill=None):
+def concat_csv(input_path, output_path=None, input_file='*',
+               output_file='Concat.csv', index_col=[0],
+               join='outer', subfolders=False,
+               fill_na=False, ffill=None):
+
+
     ''' Concatenates all csv files in a folder and optionnally its subfolders
 
         Positional arguments:
@@ -17,32 +19,66 @@ def concat_csv(input_path, output_file='Concat.csv',
         :index_col list
         :output_path None
         :join str
-        :sort boolean
         :subfolders boolean
         :fillna boolean
-        ffill=None
+        :ffill=None
 
     '''
 
+
+    #Adapt path to look in subfolders
     sub = _search_subfolders(subfolders)
 
+    #Add csv extension to input
+    input_file = _has_csv_extension(input_file)
+
+    #Output path = input path if not precised by user
     output_path = _check_output_path(input_path, output_path)
-    output_path = os.path.join(output_path, output_file)
 
+    #Check if file with output name already exists
     if file_exists(output_file, input_path, sub):
+        if not _yes_no('Output file already exists. Overwrite? [Y/N]')
+            output_file = _increment_file_name(output_file)
 
-        df = pd.concat([pd.read_csv(f, index_col=index_col)
-                        for f in glob.glob(input_path+sub+'/*.csv',
-                                           recursive=True)], sort=False)
+    #List of all paths to matching files
+    occurences = glob.glob(input_path+sub+input_file, recursive=True)
 
-        df.to_csv(output_path)
+    print('{0} matching files found'.format(len(occurences)))
+
+    #Concatenate files with pandas
+    df = pd.concat([pd.read_csv(f, index_col=index_col)
+                        for f in occurences], sort=False)
+
+    #Write result to CSV
+    df.to_csv(os.path.join(output_path, output_file))
+
+    print('All files concatenated in {0}'/
+            .format(os.path.join(output_path, output_file)))
+
+
+def _yes_no(question):
+    answer = input(question + "(y/n): ").lower().strip()
+    print("")
+    while not(answer == "y" or answer == "yes" or \
+    answer == "n" or answer == "no"):
+        print("Input yes or no")
+        answer = input(question + "(y/n):").lower().strip()
+        print("")
+    if answer[0] == "y":
+        return True
+    else:
+        return False
 
 
 def _search_subfolders(subfolders):
     if subfolders:
-        return '/**'
+        return '/**/'
     else:
-        return ''
+        return '/'
+
+def _has_csv_extension():
+    if not input_file.endswith('.csv')
+        return input_file+'.csv'
 
 
 def file_exists(output_file, directory, sub):
