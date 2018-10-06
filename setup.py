@@ -7,5 +7,5 @@ setup(name='po_py',
       author='Florian Ginez',
       author_email='florian.ginez@hotmail.fr',
       license='MIT',
-      packages=['funniest', ],
+      packages=['', ],
       zip_safe=False)
