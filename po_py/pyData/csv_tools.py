@@ -3,7 +3,7 @@ import glob
 import pandas as pd
 
 
-def concat_csv(search_folder, output_folder=None, search_file='*',
+def concat_csv(search_folder, output_folder=None, search_file='*.csv',
                output_file='Concat.csv', index_col=[0],
                join='outer', subfolders=False,
                fill_na=False, ffill=None):
@@ -19,16 +19,16 @@ def concat_csv(search_folder, output_folder=None, search_file='*',
         :join str
         :subfolders boolean
         :fillna boolean
-        :ffill=None
+        :ffill string
 
     '''
 
-    # Add csv extension to input
-    search_file = _add_extension(search_file, 'csv')
-    output_file = _add_extension(output_file, 'csv')
-
     # Output path = input path if not precised by user
     output_folder = _if_none(output_folder, search_folder)
+
+    # Add csv extension to input
+    input_path = _join_path(search_folder, search_file, 'csv')
+    output_path = _join_path(search_folder, search_file, 'csv')
 
     # Adapt path to look in subfolders
     sub = _search_subfolders(subfolders)
@@ -55,41 +55,20 @@ def concat_csv(search_folder, output_folder=None, search_file='*',
           .format(os.path.join(output_folder, output_file)))
 
 
-def _add_extension(file, ext):
-    ''' !!! See how to accept file both as a list or a string '''
+def _join_path(root, file, ext=None):
+    """ Creates a full path from user input folder, file_name
 
-    ext = _format_ext(ext)
+        Potential improvements:
+            - Add treatment if user does not enter raw string
+    """
 
-    if _has_extension(file, ext):
-        return file
-    else:
-        return file+ext.lower()
+    if ext:
+        if not ext.startswith('.'):
+            ext = '.'+ext
+        if os.path.splitext(file)[1] != ext:
+            file += ext
 
-
-def _format_ext(ext):
-
-    # Treat for user input '.fileext'
-    if not ext.startswith('.'):
-        return '.'+ext.lower()
-    else:
-        return ext.lower()
-
-
-def _has_extension(file_path, ext):
-    ''' Check if a file has a specific extension
-        Could be more elegant
-
-        !!! See how to accept file both as a list or a string
-
-    '''
-
-    ext = _format_ext(ext)
-
-    # Check if file name finishes by extension
-    if os.path.splitext(file_path) == ext:
-        return True
-    else:
-        return False
+    return os.path.join(root, file)
 
 
 def _if_none(x, y):
