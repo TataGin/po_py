@@ -53,7 +53,7 @@ def create_path(folder, file, suffix=None):
             if choice in ['Owerwrite', 'o']:
                 return path
             else:
-                sys.exit()
+                sys.exit('Execution cancelled by YOU!!!')
         else:
             return path
 
