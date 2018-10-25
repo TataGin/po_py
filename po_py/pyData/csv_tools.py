@@ -1,42 +1,50 @@
-import os
+"""Tools for managing files and data."""
+
 import glob
 import pandas as pd
+import path_tools as pt
+import input_tools as it
+import pathlib as pl
 
 
-def concat_csv(search_folder, output_folder=None, search_file='*.csv',
+def concat_csv(search_folder=None, output_folder=None, search_file='*.csv',
                output_file='Concat.csv', index_col=[0],
                join='outer', subfolders=False,
                fill_na=False, ffill=None):
-    ''' Concatenates all csv files in a folder and optionnally its subfolders
+    """Concatenates all csv files in a folder and optionnally its subfolders.
 
-        Positional arguments:
-        :search_folder str
+    Positional arguments:
+    :search_folder str
 
-        Keyword arguments:
-        :output_file str
-        :index_col list
-        :output_folder None
-        :join str
-        :subfolders boolean
-        :fillna boolean
-        :ffill string
+    Keyword arguments:
+    :search_folder str
+    :output_folder str
+    :search_file
+    :output_file str
+    :index_col list
+    :output_folder str
+    :join str
+    :subfolders boolean
+    :fillna boolean
+    :ffill string
+    """
 
-    '''
+    # If no search folder given, looks in current working directory
+    if not search_folder:
+        search_folder = pl.Path.cwd()
 
     # Output path = input path if not precised by user
-    output_folder = _if_none(output_folder, search_folder)
+    output_folder = it.if_none(output_folder, search_folder)
 
     # Add csv extension to input
-    input_path = _join_path(search_folder, search_file, 'csv')
-    output_path = _join_path(search_folder, search_file, 'csv')
+    input_path = pt.create_path(search_folder, search_file, 'csv')
+    output_path = pt.create_path(search_folder, search_file, 'csv')
+
+    # Check if file with output name already exists
+    pt.prompt_if_exists(output_file)
 
     # Adapt path to look in subfolders
     sub = _search_subfolders(subfolders)
-
-    # Check if file with output name already exists
-    _prompt_if_exists(output_file)
-    if file_exists(os.path.join(output_folder, output_file)):
-        output_file = _prompt_replace(output_file)
 
     # List of all paths to matching files
     occurences = glob.glob(search_folder+sub+search_file, recursive=True)
@@ -55,78 +63,6 @@ def concat_csv(search_folder, output_folder=None, search_file='*.csv',
           .format(os.path.join(output_folder, output_file)))
 
 
-def _join_path(root, file, ext=None):
-    """ Creates a full path from user input folder, file_name
-
-        Potential improvements:
-            - Add treatment if user does not enter raw string
-    """
-
-    if ext:
-        if not ext.startswith('.'):
-            ext = '.'+ext
-        if os.path.splitext(file)[1] != ext:
-            file += ext
-
-    return os.path.join(root, file)
-
-
-def _if_none(x, y):
-
-    if x:
-        return x
-    else:
-        return y
-
-
-def _search_subfolders(subfolders):
-    ''' Returns substring for searching in subfolders
-
-        Positional arguments:
-        : subfolders boolean
-
-    '''
-
-    if subfolders:
-        return '/**/'
-    else:
-        return '/'
-
-
-def _prompt_replace(file_path):
-    pass
-
-
-def file_exists(path):
-    """ Checks if the files already exists in the folder.
-
-        Positional arguments:
-        :path str
-
-    """
-
-    if file_exists(file_path):
-        return os.path.isfile(file_path)
-
-
-def _yes_no(question):
-    answer = input(question + "(y/n): ").lower().strip()
-    print("")
-    while not(answer == "y" or answer == "yes" or
-              answer == "n" or answer == "no"):
-        print("Input yes or no")
-        answer = input(question + "(y/n):").lower().strip()
-        print("")
-    if answer[0] == "y":
-        return True
-    else:
-        return False
-
-
-def _increment_file_name(file_path):
-    pass
-
-
 def _fill_na(df, fill_na, ffill):
 
     if fill_na or ffill:
@@ -134,17 +70,17 @@ def _fill_na(df, fill_na, ffill):
 
 
 def excel_to_csv(input_path, output_folder=None, skiprows=None):
-    ''' Saves a .csv copy of all Excel file (.xls or .xlsx) in a folder
-        If no output path is given, saves the stacked file in the same
-        folder as the input files
+    ''' Saves a .csv copy of all Excel file (.xls or .xlsx) in a folder.
 
-        Postitional arguments:
-        :input_path str
+    If no output path is given, saves the stacked file in the same
+    folder as the input files.
 
-        Keyword arguments:
-        :output_path - str
-        :skiprows = list
+    Postitional arguments:
+    :input_path str
 
+    Keyword arguments:
+    :output_path - str
+    :skiprows = list
     '''
 
     if not output_path:

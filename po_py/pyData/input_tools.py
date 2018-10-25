@@ -1,9 +1,5 @@
 """Contains functions to control for user inputs."""
 
-import pathlib as pl
-import sys
-import re
-
 
 def yes_no(question):
     """Check if user gave a valid answer to a yes/no question.
