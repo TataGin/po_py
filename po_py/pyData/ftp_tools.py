@@ -1,6 +1,14 @@
 import pandas as pd
 from io import BytesIO
 
+HOST = 'indices.markit.com'
+USER_ID = 'WISDOM_TREE'
+PWD = 'Fz5G95klKmDr'
+CWD = '/IBOXX_CUSTOM_INDICES/b171101/components'
+FILE_NAME = 'iboxx_b171101_eom_components_201806.csv'
+
+ftp = FTP(HOST, user=USER_ID, passwd=PWD)
+
 
 def ftp_download(ftp, file_name=None, source_cwd='/'):
     """ Downloads files from FTP server
