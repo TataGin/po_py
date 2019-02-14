@@ -34,7 +34,7 @@ def concat_csv(work_folder=None, output_folder=None, search_file='*.csv',
     occurences = pt.search(input_path, subfolders)
 
     # Print the number of files found
-    print('{0} matching files found'.format(len(occurences)+1))
+    print('{0} matching files found'.format(len(occurences) + 1))
 
     # Function to treat changing columns names
 
@@ -101,7 +101,7 @@ def concat_csv(files, low_strip=False, replace_cols=None):
 
 
 def _concat_csv_lower_strip(files):
-    """Concatenate files, df columns lowered and stripped>
+    """Concatenate files, df columns lowered and stripped
 
     """
     df = pd.concat([pd.read_csv(f, index_col=index_col).rename(
